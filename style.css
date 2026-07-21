@@ -30,17 +30,17 @@ input {
 .page {
   width: 1300px;
   margin: 0 auto;
-  padding: 28px 0 48px;
+  padding: 16px 0 24px;
 }
 
 .site-header {
-  padding-bottom: 18px;
+  padding-bottom: 10px;
   border-bottom: 2px solid var(--ink);
 }
 
 .eyebrow,
 .section-label {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   color: var(--accent);
   font-size: 0.72rem;
   font-weight: 700;
@@ -54,9 +54,9 @@ p {
 }
 
 h1 {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-family: inherit;
-  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem);
   font-weight: 800;
   letter-spacing: -0.04em;
 }
@@ -64,14 +64,14 @@ h1 {
 .lead {
   margin-bottom: 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
 .controls {
   display: flex;
   align-items: end;
   gap: 12px;
-  padding: 14px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -320,7 +320,7 @@ h1 {
 }
 
 .sheet {
-  padding-top: 18px;
+  padding-top: 10px;
 }
 
 .sheet-header {
@@ -328,7 +328,7 @@ h1 {
   align-items: end;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .sheet-header h2 {
@@ -402,8 +402,8 @@ h1 {
 }
 
 .notice {
-  min-height: 1rem;
-  margin-bottom: 6px;
+  min-height: 0.9rem;
+  margin-bottom: 4px;
   color: var(--accent);
   font-size: 0.75rem;
 }
@@ -417,10 +417,12 @@ h1 {
 }
 
 .operator-card {
+  --card-width: 130px;
+  --card-height: calc(var(--card-width) * 2 / 3);
   display: grid;
   grid-template-rows: 3fr 0.5fr 0.5fr;
-  width: 130px;
-  height: calc(130px * 4 / 3);
+  width: var(--card-width);
+  height: var(--card-height);
   padding: 0;
   border: 0;
   border-right: 1px solid var(--line);
@@ -435,8 +437,7 @@ h1 {
 .operator-card:not(.has-image) {
   grid-template-rows: 1fr auto;
   align-content: space-between;
-  padding: 10px;
-  height: calc(130px * 4 / 3);
+  padding: 6px 8px;
 }
 
 .operator-image {
@@ -444,7 +445,7 @@ h1 {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 4px;
+  padding: 2px;
   object-fit: contain;
   object-position: center bottom;
   background: rgba(0, 0, 0, 0.06);
@@ -455,14 +456,16 @@ h1 {
 }
 
 .operator-name {
-  display: flex;
+  display: -webkit-box;
   align-items: center;
   overflow: hidden;
   overflow-wrap: anywhere;
-  padding: 0 8px;
-  font-size: 12px;
+  padding: 0 6px;
+  font-size: 11px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 
 .operator-meta {
@@ -470,14 +473,14 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  padding: 0 8px 4px;
+  padding: 0 6px 2px;
   min-height: 0;
 }
 
 .operator-class {
   overflow: hidden;
   color: rgba(32, 28, 24, 0.72);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -487,7 +490,7 @@ h1 {
 .operator-rarity {
   flex-shrink: 0;
   color: #b07c26;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.02em;
 }
 
