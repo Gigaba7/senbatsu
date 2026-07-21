@@ -99,6 +99,11 @@
         </fieldset>
 
         <fieldset class="option-group">
+          <legend>選出対象職分</legend>
+          <div class="class-toggles" id="class-toggles"></div>
+        </fieldset>
+
+        <fieldset class="option-group">
           <legend>レアリティごとの最低人数</legend>
           <div class="minimum-grid">
             <label>☆6<input type="number" min="0" step="1" value="0" data-rarity-minimum="6" /></label>
@@ -120,8 +125,12 @@
 
     <template id="operator-template">
       <button class="operator-card" type="button">
+        <img class="operator-image" alt="" hidden />
         <span class="operator-name"></span>
-        <span class="operator-rarity" aria-label=""></span>
+        <span class="operator-meta">
+          <span class="operator-class"></span>
+          <span class="operator-rarity" aria-label=""></span>
+        </span>
       </button>
     </template>
 

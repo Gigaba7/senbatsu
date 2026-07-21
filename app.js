@@ -1,5 +1,6 @@
 const STORAGE_KEY = "randomOperatorSheet";
 const OPTIONS_STORAGE_KEY = "randomOperatorSheetOptions";
+const OPERATOR_IMAGE_DIR = "image/";
 const RARITIES = [6, 5, 4, 3, 2, 1];
 
 const countInput = document.querySelector("#operator-count");
@@ -12,6 +13,7 @@ const optionsButton = document.querySelector("#options-button");
 const optionsDialog = document.querySelector("#options-dialog");
 const clearOptionsButton = document.querySelector("#clear-options-button");
 const optionsNotice = document.querySelector("#options-notice");
+const classToggles = document.querySelector("#class-toggles");
 const operatorList = document.querySelector("#operator-list");
 const progress = document.querySelector("#progress");
 const notice = document.querySelector("#notice");
@@ -20,8 +22,41 @@ const operatorTemplate = document.querySelector("#operator-template");
 let sheet = null;
 let selectionOptions = {
   rarities: Object.fromEntries(RARITIES.map((rarity) => [rarity, true])),
+  classes: Object.fromEntries(OPERATOR_CLASSES.map((className) => [className, true])),
   minimums: Object.fromEntries(RARITIES.map((rarity) => [rarity, 0]))
 };
+
+function createDefaultSelectionOptions() {
+  return {
+    rarities: Object.fromEntries(RARITIES.map((rarity) => [rarity, true])),
+    classes: Object.fromEntries(OPERATOR_CLASSES.map((className) => [className, true])),
+    minimums: Object.fromEntries(RARITIES.map((rarity) => [rarity, 0]))
+  };
+}
+
+function buildClassToggles() {
+  classToggles.replaceChildren();
+  OPERATOR_CLASSES.forEach((className) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.dataset.classToggle = className;
+    input.checked = true;
+    label.append(input, document.createTextNode(className));
+    classToggles.append(label);
+  });
+}
+
+function isOperatorSelectable(operator) {
+  return (
+    selectionOptions.rarities[operator.rarity] && selectionOptions.classes[operator.class]
+  );
+}
+
+function getOperatorImageSrc(operator) {
+  const fileName = operator.image || `${operator.id}.png`;
+  return `${OPERATOR_IMAGE_DIR}${fileName}`;
+}
 
 function saveSheet() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(sheet));
@@ -44,6 +79,9 @@ function shuffle(items) {
 
 function createSelection(count) {
   const enabledRarities = RARITIES.filter((rarity) => selectionOptions.rarities[rarity]);
+  const enabledClasses = OPERATOR_CLASSES.filter(
+    (className) => selectionOptions.classes[className]
+  );
   const minimumTotal = enabledRarities.reduce(
     (total, rarity) => total + selectionOptions.minimums[rarity],
     0
@@ -52,25 +90,27 @@ function createSelection(count) {
   if (enabledRarities.length === 0) {
     throw new Error("選出対象のレアリティを1つ以上選択してください。");
   }
+  if (enabledClasses.length === 0) {
+    throw new Error("選出対象の職分を1つ以上選択してください。");
+  }
   if (minimumTotal > count) {
     throw new Error("レアリティごとの最低人数の合計が抽選人数を超えています。");
   }
 
+  const pool = OPERATOR_DATA.filter(isOperatorSelectable);
   const selected = [];
   for (const rarity of enabledRarities) {
-    const candidates = shuffle(OPERATOR_DATA.filter((operator) => operator.rarity === rarity));
+    const candidates = shuffle(pool.filter((operator) => operator.rarity === rarity));
     const minimum = selectionOptions.minimums[rarity];
     if (minimum > candidates.length) {
-      throw new Error(`☆${rarity}の最低人数が登録オペレーター数を超えています。`);
+      throw new Error(`☆${rarity}の最低人数が条件に合うオペレーター数を超えています。`);
     }
     selected.push(...candidates.slice(0, minimum));
   }
 
   const selectedIds = new Set(selected.map((operator) => operator.id));
   const remainingCandidates = shuffle(
-    OPERATOR_DATA.filter(
-      (operator) => enabledRarities.includes(operator.rarity) && !selectedIds.has(operator.id)
-    )
+    pool.filter((operator) => !selectedIds.has(operator.id))
   );
   const needed = count - selected.length;
 
@@ -154,10 +194,16 @@ function applyOptionsToDialog() {
     minimum.value = selectionOptions.minimums[rarity];
     minimum.disabled = !toggle.checked;
   });
+
+  OPERATOR_CLASSES.forEach((className) => {
+    const toggle = document.querySelector(`[data-class-toggle="${className}"]`);
+    if (toggle) toggle.checked = selectionOptions.classes[className];
+  });
 }
 
 function readOptionsFromDialog() {
   const rarities = {};
+  const classes = {};
   const minimums = {};
 
   RARITIES.forEach((rarity) => {
@@ -169,7 +215,12 @@ function readOptionsFromDialog() {
       : 0;
   });
 
-  return { rarities, minimums };
+  OPERATOR_CLASSES.forEach((className) => {
+    const toggle = document.querySelector(`[data-class-toggle="${className}"]`);
+    classes[className] = Boolean(toggle?.checked);
+  });
+
+  return { rarities, classes, minimums };
 }
 
 function saveSelectionOptions() {
@@ -179,12 +230,13 @@ function saveSelectionOptions() {
 }
 
 function updateOptionsButton() {
-  optionsButton.classList.toggle(
-    "is-active",
-    RARITIES.some(
-      (rarity) => !selectionOptions.rarities[rarity] || selectionOptions.minimums[rarity] > 0
-    )
+  const hasRestrictedRarity = RARITIES.some(
+    (rarity) => !selectionOptions.rarities[rarity] || selectionOptions.minimums[rarity] > 0
   );
+  const hasRestrictedClass = OPERATOR_CLASSES.some(
+    (className) => !selectionOptions.classes[className]
+  );
+  optionsButton.classList.toggle("is-active", hasRestrictedRarity || hasRestrictedClass);
 }
 
 function loadSelectionOptions() {
@@ -200,6 +252,15 @@ function loadSelectionOptions() {
         selectionOptions.minimums[rarity] = saved.minimums[rarity];
       }
     });
+
+    if (saved.classes) {
+      OPERATOR_CLASSES.forEach((className) => {
+        if (typeof saved.classes[className] === "boolean") {
+          selectionOptions.classes[className] = saved.classes[className];
+        }
+      });
+    }
+
     updateOptionsButton();
   } catch {
     localStorage.removeItem(OPTIONS_STORAGE_KEY);
@@ -233,11 +294,28 @@ function render() {
     card.setAttribute("aria-pressed", String(entry.used));
     card.setAttribute(
       "aria-label",
-      `${operator.name}、${rarityLabel}。${entry.used ? "使用済み。クリックして未使用に戻す" : "未使用。クリックして使用済みにする"}`
+      `${operator.name}、${operator.class}、${rarityLabel}。${entry.used ? "使用済み。クリックして未使用に戻す" : "未使用。クリックして使用済みにする"}`
     );
     card.querySelector(".operator-name").textContent = operator.name;
+    card.querySelector(".operator-class").textContent = operator.class;
     card.querySelector(".operator-rarity").textContent = rarityLabel;
     card.querySelector(".operator-rarity").setAttribute("aria-label", `レアリティ${operator.rarity}`);
+
+    const image = card.querySelector(".operator-image");
+    image.alt = "";
+    image.hidden = false;
+    card.classList.add("has-image");
+    image.addEventListener(
+      "error",
+      () => {
+        image.hidden = true;
+        image.removeAttribute("src");
+        card.classList.remove("has-image");
+      },
+      { once: true }
+    );
+    image.src = getOperatorImageSrc(operator);
+
     operatorList.append(card);
   });
 }
@@ -270,7 +348,13 @@ function generate() {
     return;
   }
 
-  const actualCount = Math.min(count, OPERATOR_DATA.length);
+  const selectableCount = OPERATOR_DATA.filter(isOperatorSelectable).length;
+  if (selectableCount === 0) {
+    showNotice("条件に合うオペレーターがいません。オプションを確認してください。");
+    return;
+  }
+
+  const actualCount = Math.min(count, selectableCount);
   let operators;
   try {
     operators = createSelection(actualCount);
@@ -290,8 +374,8 @@ function generate() {
   refreshSheetSeed();
   saveSheet();
   showNotice(
-    count > OPERATOR_DATA.length
-      ? `登録済みの${OPERATOR_DATA.length}人をすべて選出しました。`
+    count > selectableCount
+      ? `条件に合う${selectableCount}人をすべて選出しました。`
       : `${actualCount}人を新しく選出しました。`
   );
   render();
@@ -377,10 +461,7 @@ optionsDialog.querySelector("form").addEventListener("submit", (event) => {
 });
 
 clearOptionsButton.addEventListener("click", () => {
-  selectionOptions = {
-    rarities: Object.fromEntries(RARITIES.map((rarity) => [rarity, true])),
-    minimums: Object.fromEntries(RARITIES.map((rarity) => [rarity, 0]))
-  };
+  selectionOptions = createDefaultSelectionOptions();
   applyOptionsToDialog();
   optionsNotice.textContent = "初期値に戻しました。保存すると反映されます。";
 });
@@ -416,6 +497,7 @@ operatorList.addEventListener("click", (event) => {
   render();
 });
 
+buildClassToggles();
 loadSelectionOptions();
 applyOptionsToDialog();
 loadSheet();

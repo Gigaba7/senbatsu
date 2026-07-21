@@ -251,13 +251,15 @@ h1 {
   font-weight: 700;
 }
 
-.rarity-toggles {
+.rarity-toggles,
+.class-toggles {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.rarity-toggles label {
+.rarity-toggles label,
+.class-toggles label {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -268,7 +270,8 @@ h1 {
   font-size: 0.85rem;
 }
 
-.rarity-toggles input {
+.rarity-toggles input,
+.class-toggles input {
   margin: 0;
   accent-color: var(--accent);
 }
@@ -430,6 +433,53 @@ h1 {
   transition: background-color 120ms ease, color 120ms ease;
 }
 
+.operator-card.has-image {
+  min-height: 148px;
+  padding: 0;
+  gap: 0;
+}
+
+.operator-image {
+  display: block;
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  object-position: top center;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.operator-image[hidden] {
+  display: none;
+}
+
+.operator-card.has-image .operator-name,
+.operator-card.has-image .operator-meta {
+  padding-inline: 10px;
+}
+
+.operator-card.has-image .operator-name {
+  padding-top: 8px;
+  margin-bottom: 4px;
+}
+
+.operator-card.has-image .operator-meta {
+  padding-bottom: 10px;
+}
+
+.operator-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.operator-class {
+  color: rgba(32, 28, 24, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .operator-card:hover {
   filter: brightness(0.96);
 }
@@ -489,8 +539,13 @@ h1 {
   text-decoration-thickness: 2px;
 }
 
-.operator-card.is-used .operator-rarity {
+.operator-card.is-used .operator-rarity,
+.operator-card.is-used .operator-class {
   color: #ddd5c7;
+}
+
+.operator-card.is-used .operator-image {
+  filter: grayscale(1) brightness(0.7);
 }
 
 .operator-card.is-used:hover {

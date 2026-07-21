@@ -1,423 +1,467 @@
 /*
- * オペレーター一覧です。レア度ごとの名前配列を編集すると、抽選対象を更新できます。
+ * オペレーター一覧です。1キャラ = 1オブジェクトで管理します。
+ * { id, rarity, name, class, image }
+ * id は 4桁: レアリティ(1) + 職分番号(1) + 通し番号(2桁ゼロ埋め)。職分は OPERATOR_CLASSES の1始まり。
+ * image はファイル名。空なら id.png（例: 6101.png）を image/ から参照します。
  */
-const ROSTER_BY_RARITY = {
-  6: `イネス
-ヴィジェル
-ウルピスフォリア
-サイラッハ
-サガ
-シージ
-バグパイプ
-フレイムテイル
-ミュルジス
-凛御シルバーアッシュ
-アイリーニ
-ヴィーナ・ヴィクトリア
-ヴィヴィアナ
-ウルピアヌス
-エンテレケイア
-シルバーアッシュ
-ズオ・ラウ
-スカジ
-スルト
-ソーンズ
-チェン
-チューバイ
-チョンユエ
-デーゲンブレヒャー
-パラス
-ブレイズ
-ヘドリー
-ペペ
-ヘラグ
-マウンテン
-ムリナール
-レッシング
-聖約イグゼキュター
-赤刃明霄チェン
-司霆レイズ
-豊川祥子
-百錬ガヴィル
-耀騎士ニアール
-サリア
-サンクタ・ミキサー
-シュウ
-ニェン
-ブレミシャイン
-ペナンス
-ホシグマ
-ホルン
-マドロック
-ユー
-ユーネクテス
-滌火ジェシカ
-斬業ホシグマ
-Ash
-W(プレイアブル)
-アルケット
-ウィシャデル
-エクシア
-シュヴァルツ
-ティフォン
-ナラントゥヤ
-パゼオンカ
-ファートゥース
-フィアメッタ
-レイ
-レミュアン
-ロサ
-ロスモンティス
-遊龍チェン
-イフリータ
-エイヤフィヤトラ
-エーベンホルツ
-カーネリアン
-ケオベ
-ゴールデングロー
-シー
-ニンフ
-ネクラス
-パッセンジャー
-ホルハイヤ
-マルシル
-マントラ
-モスティマ
-リン
-ロゴス
-荒蕪ラップランド
-熾炎ブレイズ
-聖聆プラマニクス
-Mon3tr
-ケルシー
-シャイニング
-ティティ
-ナイチンゲール
-ルーメン
-焔影リード
-純燼エイヤフィヤトラ
-アンジェリーナ
-ヴィルトゥオーサ
-シヴィライト・エテルナ
-スズラン
-ステインレス
-トラゴーディア
-ナスティ
-ノーシス
-ハルカ
-マゼラン
-リィン
-レイディアン
-淬羽サイレンス
-溯光アステジーニ
-濁心スカジ
-Ela
-ア
-アスカロン
-ウァン
-ウィーディ
-キリンRヤトウ
-クラウンスレイヤー
-グレイディーア
-ドロシー
-ファントム
-ミヅキ
-リー
-引星ソーンズ
-帰溟スペクター
-血掟テキサス
-新約エクシア
-琳琅スワイヤー`,
-  5: `エリジウム
-カンタービレ
-キアーベ
-グラニ
-ケストレル
-サーファー
-ズィマー
-チルチャック
-テキサス
-パズル
-ブラックナイト
-ポンシラス
-マツキリ
-ミトム
-リード
-ワイルドメイン
-ワンチィン
-歴陣鋭槍フェン
-Doc
-Fuze
-Tachanka
-アカフユ
-アステシア
-アーミヤ(前衛)
-インドラ
-ウィスラッシュ
-ウィンドチャイム
-ヴァルカリス
-エアースカーペ
-エンカク
-オッダ
-グレースベアラー
-サベージ
-シデロカ
-スペクター
-スワイヤー
-ダグザ
-テキーラ
-バイビーク
-ハイモア
-ハディヤ
-フランカ
-ブライオファイタ
-フリント
-ブローカ
-モーガン
-ライオス
-ラ・プルマ
-ラップランド
-リェータ
-レウスSノイルホーン
-祐天寺にゃむ
-Blitz
-アスベストス
-アッシュロック
-アンダーフロー
-ヴァルカン
-ヴェトチキ
-ウン
-オーロラ
-クロワッサン
-ケルン
-シャレム
-セメント
-センシ
-ツェルニー
-ニアール
-バイソン
-ファイヤーホイッスル
-フィラエ
-ベースライン
-ヘビーレイン
-リスカム
-アオスタ
-アズリウス
-アンドレアナ
-イグゼキュター
-インサイダー
-エイプリル
-エラト
-キチセイ
-グレースロート
-コールドショット
-シェーシャ
-ジエユン
-スカイボックス
-スノーハンター
-ジュー
-トギフォンス
-ファイヤーウォッチ
-プラチナ
-ブリギッド
-プロヴァンス
-メテオリーテ
-メラナイト
-ルナカブ
-寒芒クルース
-承曦グレイ
-アイリス
-アステジーニ
-アブサント
-アロマ
-アーミヤ
-カニパラート
-コロセラム
-イェラ
-ウォーミー
-サンタラ
-スカイフレア
-ディアマンテ
-テクノ
-デルフィーン
-トミミ
-ナイトメア
-ハーモニー
-ビーズワクス
-ミス・クリスティーン
-ミニマリスト
-ミント
-レイズ
-レオンハルト
-ロックロック
-炎獄ラヴァ
-アーミヤ(医療)
-ヴァンデラ
-ウィスパーレイン
-サイレンス
-セイロン
-タラクサカム
-トゥイエ
-ノウエル
-ハニーベリー
-パピルス
-パプリカ
-ハロルド
-フィリオプシス
-フォリニック
-ブリーズ
-マルベリー
-レコードキーパー
-ローズソルト
-ワルファリン
-濯塵ハイビスカス
-アランナ
-イースチナ
-ヴァラルクビン
-ウインドフリット
-キャサリン
-クエルクス
-グラウコス
-グレインバッズ
-サンドレコナー
-シャマレ
-シーン
-シィンズゥ
-ソラ
-ツキノギ
-ハイディ
-プラマニクス
-プロヴァイゾ
-ボビング
-メイヤー
-ルシーラ
-九色鹿
-萃香パフューマー
-三角初華
-Frost
-Iana
-アーモンド
-ウユウ
-ウルフェナイト
-エフイーター
-エンフォーサー
-カゼマル
-カフカ
-キララ
-クリフハート
-スノーズント
-スプリア
-ティッピ
-フィグリーノ
-ブリキ
-ベナ
-マンティコア
-レッド
-ロビン
-ワイフー
-八幡海鈴
-若葉睦`,
-  4: `ヴィグナ
-クーリエ
-スカベンジャー
-スネグーラチカ
-テンニンカ
-ビーンストーク
-アレーン
-ウィンドスクート
-ウタゲ
-エステル
-カッター
-クォーツ
-コンビクション
-ジャッキー
-ドーベルマン
-ビーハンター
-ヒューマス
-フロストリーフ
-マトイマル
-ムース
-羅小黒
-クオーラ
-グム
-ジュナー
-バブル
-マッターホルン
-ルトナダ
-アシッドドロップ
-アンブリエル
-ヴァーミル
-ケイパー
-ジェシカ
-シラユキ
-トター
-パインコーン
-メイ
-メテオ
-アコルト
-インディゴ
-カシャ
-ギターノ
-グレイ
-プリン
-ヘイズ
-ガヴィル
-ススーロ
-セイリュウ
-チェストナット
-パフューマー
-ミルラ
-アーススピリット
-ディピカ
-ポデンコ
-ロベルタ
-イーサン
-ヴァーダント
-グラベル
-コントレイル
-ジェイ
-ショウ
-ロープ`,
-  3: `バニラ
-フェン
-プリュム
-ポプカル
-ミッドナイト
-メランサ
-カーディ
-スポット
-ビーグル
-アドナキエル
-カタパルト
-クルース
-スチュワード
-ラヴァ
-アンセル
-ハイビスカス
-オーキッド`,
-  2: `ヤトウ
-ノイルホーン
-レンジャー
-12F
-ドゥリン`,
-  1: `CONFESS-47
-Castle-3
-Friston-3
-ジャスティスナイト
-テラ大陸調査団
-Lancet-2
-PhonoR-0
-U-Official
-THRM-EX`
-};
+const OPERATOR_CLASSES = [
+  "先鋒",
+  "前衛",
+  "重装",
+  "狙撃",
+  "術師",
+  "医療",
+  "補助",
+  "特殊"
+];
 
-const OPERATOR_DATA = Object.entries(ROSTER_BY_RARITY).flatMap(([rarity, names]) =>
-  names
-    .trim()
-    .split("\n")
-    .map((name, index) => ({
-      id: `${rarity}-${index + 1}-${name}`,
-      name,
-      rarity: Number(rarity)
-    }))
-);
+const OPERATOR_DATA = [
+  { id: "6101", rarity: 6, name: "イネス", class: "先鋒", image: "" },
+  { id: "6102", rarity: 6, name: "ヴィジェル", class: "先鋒", image: "" },
+  { id: "6103", rarity: 6, name: "ウルピスフォリア", class: "先鋒", image: "" },
+  { id: "6104", rarity: 6, name: "サイラッハ", class: "先鋒", image: "" },
+  { id: "6105", rarity: 6, name: "サガ", class: "先鋒", image: "" },
+  { id: "6106", rarity: 6, name: "シージ", class: "先鋒", image: "" },
+  { id: "6107", rarity: 6, name: "バグパイプ", class: "先鋒", image: "" },
+  { id: "6108", rarity: 6, name: "フレイムテイル", class: "先鋒", image: "" },
+  { id: "6109", rarity: 6, name: "ミュルジス", class: "先鋒", image: "" },
+  { id: "6110", rarity: 6, name: "凛御シルバーアッシュ", class: "先鋒", image: "" },
+
+  { id: "6201", rarity: 6, name: "アイリーニ", class: "前衛", image: "" },
+  { id: "6202", rarity: 6, name: "ヴィーナ・ヴィクトリア", class: "前衛", image: "" },
+  { id: "6203", rarity: 6, name: "ヴィヴィアナ", class: "前衛", image: "" },
+  { id: "6204", rarity: 6, name: "ウルピアヌス", class: "前衛", image: "" },
+  { id: "6205", rarity: 6, name: "エンテレケイア", class: "前衛", image: "" },
+  { id: "6206", rarity: 6, name: "シルバーアッシュ", class: "前衛", image: "" },
+  { id: "6207", rarity: 6, name: "ズオ・ラウ", class: "前衛", image: "" },
+  { id: "6208", rarity: 6, name: "スカジ", class: "前衛", image: "" },
+  { id: "6209", rarity: 6, name: "スルト", class: "前衛", image: "" },
+  { id: "6210", rarity: 6, name: "ソーンズ", class: "前衛", image: "" },
+  { id: "6211", rarity: 6, name: "チェン", class: "前衛", image: "" },
+  { id: "6212", rarity: 6, name: "チューバイ", class: "前衛", image: "" },
+  { id: "6213", rarity: 6, name: "チョンユエ", class: "前衛", image: "" },
+  { id: "6214", rarity: 6, name: "デーゲンブレヒャー", class: "前衛", image: "" },
+  { id: "6215", rarity: 6, name: "パラス", class: "前衛", image: "" },
+  { id: "6216", rarity: 6, name: "ブレイズ", class: "前衛", image: "" },
+  { id: "6217", rarity: 6, name: "ヘドリー", class: "前衛", image: "" },
+  { id: "6218", rarity: 6, name: "ペペ", class: "前衛", image: "" },
+  { id: "6219", rarity: 6, name: "ヘラグ", class: "前衛", image: "" },
+  { id: "6220", rarity: 6, name: "マウンテン", class: "前衛", image: "" },
+  { id: "6221", rarity: 6, name: "ムリナール", class: "前衛", image: "" },
+  { id: "6222", rarity: 6, name: "レッシング", class: "前衛", image: "" },
+  { id: "6223", rarity: 6, name: "聖約イグゼキュター", class: "前衛", image: "" },
+  { id: "6224", rarity: 6, name: "赤刃明霄チェン", class: "前衛", image: "" },
+  { id: "6225", rarity: 6, name: "司霆レイズ", class: "前衛", image: "" },
+  { id: "6226", rarity: 6, name: "豊川祥子", class: "前衛", image: "" },
+  { id: "6227", rarity: 6, name: "百錬ガヴィル", class: "前衛", image: "" },
+  { id: "6228", rarity: 6, name: "耀騎士ニアール", class: "前衛", image: "" },
+
+  { id: "6301", rarity: 6, name: "サリア", class: "重装", image: "" },
+  { id: "6302", rarity: 6, name: "サンクタ・ミキサー", class: "重装", image: "" },
+  { id: "6303", rarity: 6, name: "シュウ", class: "重装", image: "" },
+  { id: "6304", rarity: 6, name: "ニェン", class: "重装", image: "" },
+  { id: "6305", rarity: 6, name: "ブレミシャイン", class: "重装", image: "" },
+  { id: "6306", rarity: 6, name: "ペナンス", class: "重装", image: "" },
+  { id: "6307", rarity: 6, name: "ホシグマ", class: "重装", image: "" },
+  { id: "6308", rarity: 6, name: "ホルン", class: "重装", image: "" },
+  { id: "6309", rarity: 6, name: "マドロック", class: "重装", image: "" },
+  { id: "6310", rarity: 6, name: "ユー", class: "重装", image: "" },
+  { id: "6311", rarity: 6, name: "ユーネクテス", class: "重装", image: "" },
+  { id: "6312", rarity: 6, name: "滌火ジェシカ", class: "重装", image: "" },
+  { id: "6313", rarity: 6, name: "斬業ホシグマ", class: "重装", image: "" },
+
+  { id: "6401", rarity: 6, name: "Ash", class: "狙撃", image: "" },
+  { id: "6402", rarity: 6, name: "W(プレイアブル)", class: "狙撃", image: "" },
+  { id: "6403", rarity: 6, name: "アルケット", class: "狙撃", image: "" },
+  { id: "6404", rarity: 6, name: "ウィシャデル", class: "狙撃", image: "" },
+  { id: "6405", rarity: 6, name: "エクシア", class: "狙撃", image: "" },
+  { id: "6406", rarity: 6, name: "シュヴァルツ", class: "狙撃", image: "" },
+  { id: "6407", rarity: 6, name: "ティフォン", class: "狙撃", image: "" },
+  { id: "6408", rarity: 6, name: "ナラントゥヤ", class: "狙撃", image: "" },
+  { id: "6409", rarity: 6, name: "パゼオンカ", class: "狙撃", image: "" },
+  { id: "6410", rarity: 6, name: "ファートゥース", class: "狙撃", image: "" },
+  { id: "6411", rarity: 6, name: "フィアメッタ", class: "狙撃", image: "" },
+  { id: "6412", rarity: 6, name: "レイ", class: "狙撃", image: "" },
+  { id: "6413", rarity: 6, name: "レミュアン", class: "狙撃", image: "" },
+  { id: "6414", rarity: 6, name: "ロサ", class: "狙撃", image: "" },
+  { id: "6415", rarity: 6, name: "ロスモンティス", class: "狙撃", image: "" },
+  { id: "6416", rarity: 6, name: "遊龍チェン", class: "狙撃", image: "" },
+
+  { id: "6501", rarity: 6, name: "イフリータ", class: "術師", image: "" },
+  { id: "6502", rarity: 6, name: "エイヤフィヤトラ", class: "術師", image: "" },
+  { id: "6503", rarity: 6, name: "エーベンホルツ", class: "術師", image: "" },
+  { id: "6504", rarity: 6, name: "カーネリアン", class: "術師", image: "" },
+  { id: "6505", rarity: 6, name: "ケオベ", class: "術師", image: "" },
+  { id: "6506", rarity: 6, name: "ゴールデングロー", class: "術師", image: "" },
+  { id: "6507", rarity: 6, name: "シー", class: "術師", image: "" },
+  { id: "6508", rarity: 6, name: "ニンフ", class: "術師", image: "" },
+  { id: "6509", rarity: 6, name: "ネクラス", class: "術師", image: "" },
+  { id: "6510", rarity: 6, name: "パッセンジャー", class: "術師", image: "" },
+  { id: "6511", rarity: 6, name: "ホルハイヤ", class: "術師", image: "" },
+  { id: "6512", rarity: 6, name: "マルシル", class: "術師", image: "" },
+  { id: "6513", rarity: 6, name: "マントラ", class: "術師", image: "" },
+  { id: "6514", rarity: 6, name: "モスティマ", class: "術師", image: "" },
+  { id: "6515", rarity: 6, name: "リン", class: "術師", image: "" },
+  { id: "6516", rarity: 6, name: "ロゴス", class: "術師", image: "" },
+  { id: "6517", rarity: 6, name: "荒蕪ラップランド", class: "術師", image: "" },
+  { id: "6518", rarity: 6, name: "熾炎ブレイズ", class: "術師", image: "" },
+  { id: "6519", rarity: 6, name: "聖聆プラマニクス", class: "術師", image: "" },
+
+  { id: "6601", rarity: 6, name: "Mon3tr", class: "医療", image: "" },
+  { id: "6602", rarity: 6, name: "ケルシー", class: "医療", image: "" },
+  { id: "6603", rarity: 6, name: "シャイニング", class: "医療", image: "" },
+  { id: "6604", rarity: 6, name: "ティティ", class: "医療", image: "" },
+  { id: "6605", rarity: 6, name: "ナイチンゲール", class: "医療", image: "" },
+  { id: "6606", rarity: 6, name: "ルーメン", class: "医療", image: "" },
+  { id: "6607", rarity: 6, name: "焔影リード", class: "医療", image: "" },
+  { id: "6608", rarity: 6, name: "純燼エイヤフィヤトラ", class: "医療", image: "" },
+
+  { id: "6701", rarity: 6, name: "アンジェリーナ", class: "補助", image: "" },
+  { id: "6702", rarity: 6, name: "ヴィルトゥオーサ", class: "補助", image: "" },
+  { id: "6703", rarity: 6, name: "シヴィライト・エテルナ", class: "補助", image: "" },
+  { id: "6704", rarity: 6, name: "スズラン", class: "補助", image: "" },
+  { id: "6705", rarity: 6, name: "ステインレス", class: "補助", image: "" },
+  { id: "6706", rarity: 6, name: "トラゴーディア", class: "補助", image: "" },
+  { id: "6707", rarity: 6, name: "ナスティ", class: "補助", image: "" },
+  { id: "6708", rarity: 6, name: "ノーシス", class: "補助", image: "" },
+  { id: "6709", rarity: 6, name: "ハルカ", class: "補助", image: "" },
+  { id: "6710", rarity: 6, name: "マゼラン", class: "補助", image: "" },
+  { id: "6711", rarity: 6, name: "リィン", class: "補助", image: "" },
+  { id: "6712", rarity: 6, name: "レイディアン", class: "補助", image: "" },
+  { id: "6713", rarity: 6, name: "淬羽サイレンス", class: "補助", image: "" },
+  { id: "6714", rarity: 6, name: "溯光アステジーニ", class: "補助", image: "" },
+  { id: "6715", rarity: 6, name: "濁心スカジ", class: "補助", image: "" },
+
+  { id: "6801", rarity: 6, name: "Ela", class: "特殊", image: "" },
+  { id: "6802", rarity: 6, name: "ア", class: "特殊", image: "" },
+  { id: "6803", rarity: 6, name: "アスカロン", class: "特殊", image: "" },
+  { id: "6804", rarity: 6, name: "ウァン", class: "特殊", image: "" },
+  { id: "6805", rarity: 6, name: "ウィーディ", class: "特殊", image: "" },
+  { id: "6806", rarity: 6, name: "キリンRヤトウ", class: "特殊", image: "" },
+  { id: "6807", rarity: 6, name: "クラウンスレイヤー", class: "特殊", image: "" },
+  { id: "6808", rarity: 6, name: "グレイディーア", class: "特殊", image: "" },
+  { id: "6809", rarity: 6, name: "ドロシー", class: "特殊", image: "" },
+  { id: "6810", rarity: 6, name: "ファントム", class: "特殊", image: "" },
+  { id: "6811", rarity: 6, name: "ミヅキ", class: "特殊", image: "" },
+  { id: "6812", rarity: 6, name: "リー", class: "特殊", image: "" },
+  { id: "6813", rarity: 6, name: "引星ソーンズ", class: "特殊", image: "" },
+  { id: "6814", rarity: 6, name: "帰溟スペクター", class: "特殊", image: "" },
+  { id: "6815", rarity: 6, name: "血掟テキサス", class: "特殊", image: "" },
+  { id: "6816", rarity: 6, name: "新約エクシア", class: "特殊", image: "" },
+  { id: "6817", rarity: 6, name: "琳琅スワイヤー", class: "特殊", image: "" },
+
+  { id: "5101", rarity: 5, name: "エリジウム", class: "先鋒", image: "" },
+  { id: "5102", rarity: 5, name: "カンタービレ", class: "先鋒", image: "" },
+  { id: "5103", rarity: 5, name: "キアーベ", class: "先鋒", image: "" },
+  { id: "5104", rarity: 5, name: "グラニ", class: "先鋒", image: "" },
+  { id: "5105", rarity: 5, name: "ケストレル", class: "先鋒", image: "" },
+  { id: "5106", rarity: 5, name: "サーファー", class: "先鋒", image: "" },
+  { id: "5107", rarity: 5, name: "ズィマー", class: "先鋒", image: "" },
+  { id: "5108", rarity: 5, name: "チルチャック", class: "先鋒", image: "" },
+  { id: "5109", rarity: 5, name: "テキサス", class: "先鋒", image: "" },
+  { id: "5110", rarity: 5, name: "パズル", class: "先鋒", image: "" },
+  { id: "5111", rarity: 5, name: "ブラックナイト", class: "先鋒", image: "" },
+  { id: "5112", rarity: 5, name: "ポンシラス", class: "先鋒", image: "" },
+  { id: "5113", rarity: 5, name: "マツキリ", class: "先鋒", image: "" },
+  { id: "5114", rarity: 5, name: "ミトム", class: "先鋒", image: "" },
+  { id: "5115", rarity: 5, name: "リード", class: "先鋒", image: "" },
+  { id: "5116", rarity: 5, name: "ワイルドメイン", class: "先鋒", image: "" },
+  { id: "5117", rarity: 5, name: "ワンチィン", class: "先鋒", image: "" },
+  { id: "5118", rarity: 5, name: "歴陣鋭槍フェン", class: "先鋒", image: "" },
+
+  { id: "5201", rarity: 5, name: "Doc", class: "前衛", image: "" },
+  { id: "5202", rarity: 5, name: "Fuze", class: "前衛", image: "" },
+  { id: "5203", rarity: 5, name: "Tachanka", class: "前衛", image: "" },
+  { id: "5204", rarity: 5, name: "アカフユ", class: "前衛", image: "" },
+  { id: "5205", rarity: 5, name: "アステシア", class: "前衛", image: "" },
+  { id: "5206", rarity: 5, name: "アーミヤ(前衛)", class: "前衛", image: "" },
+  { id: "5207", rarity: 5, name: "インドラ", class: "前衛", image: "" },
+  { id: "5208", rarity: 5, name: "ウィスラッシュ", class: "前衛", image: "" },
+  { id: "5209", rarity: 5, name: "ウィンドチャイム", class: "前衛", image: "" },
+  { id: "5210", rarity: 5, name: "ヴァルカリス", class: "前衛", image: "" },
+  { id: "5211", rarity: 5, name: "エアースカーペ", class: "前衛", image: "" },
+  { id: "5212", rarity: 5, name: "エンカク", class: "前衛", image: "" },
+  { id: "5213", rarity: 5, name: "オッダ", class: "前衛", image: "" },
+  { id: "5214", rarity: 5, name: "グレースベアラー", class: "前衛", image: "" },
+  { id: "5215", rarity: 5, name: "サベージ", class: "前衛", image: "" },
+  { id: "5216", rarity: 5, name: "シデロカ", class: "前衛", image: "" },
+  { id: "5217", rarity: 5, name: "スペクター", class: "前衛", image: "" },
+  { id: "5218", rarity: 5, name: "スワイヤー", class: "前衛", image: "" },
+  { id: "5219", rarity: 5, name: "ダグザ", class: "前衛", image: "" },
+  { id: "5220", rarity: 5, name: "テキーラ", class: "前衛", image: "" },
+  { id: "5221", rarity: 5, name: "バイビーク", class: "前衛", image: "" },
+  { id: "5222", rarity: 5, name: "ハイモア", class: "前衛", image: "" },
+  { id: "5223", rarity: 5, name: "ハディヤ", class: "前衛", image: "" },
+  { id: "5224", rarity: 5, name: "フランカ", class: "前衛", image: "" },
+  { id: "5225", rarity: 5, name: "ブライオファイタ", class: "前衛", image: "" },
+  { id: "5226", rarity: 5, name: "フリント", class: "前衛", image: "" },
+  { id: "5227", rarity: 5, name: "ブローカ", class: "前衛", image: "" },
+  { id: "5228", rarity: 5, name: "モーガン", class: "前衛", image: "" },
+  { id: "5229", rarity: 5, name: "ライオス", class: "前衛", image: "" },
+  { id: "5230", rarity: 5, name: "ラ・プルマ", class: "前衛", image: "" },
+  { id: "5231", rarity: 5, name: "ラップランド", class: "前衛", image: "" },
+  { id: "5232", rarity: 5, name: "リェータ", class: "前衛", image: "" },
+  { id: "5233", rarity: 5, name: "レウスSノイルホーン", class: "前衛", image: "" },
+  { id: "5234", rarity: 5, name: "祐天寺にゃむ", class: "前衛", image: "" },
+
+  { id: "5301", rarity: 5, name: "Blitz", class: "重装", image: "" },
+  { id: "5302", rarity: 5, name: "アスベストス", class: "重装", image: "" },
+  { id: "5303", rarity: 5, name: "アッシュロック", class: "重装", image: "" },
+  { id: "5304", rarity: 5, name: "アンダーフロー", class: "重装", image: "" },
+  { id: "5305", rarity: 5, name: "ヴァルカン", class: "重装", image: "" },
+  { id: "5306", rarity: 5, name: "ヴェトチキ", class: "重装", image: "" },
+  { id: "5307", rarity: 5, name: "ウン", class: "重装", image: "" },
+  { id: "5308", rarity: 5, name: "オーロラ", class: "重装", image: "" },
+  { id: "5309", rarity: 5, name: "クロワッサン", class: "重装", image: "" },
+  { id: "5310", rarity: 5, name: "ケルン", class: "重装", image: "" },
+  { id: "5311", rarity: 5, name: "シャレム", class: "重装", image: "" },
+  { id: "5312", rarity: 5, name: "セメント", class: "重装", image: "" },
+  { id: "5313", rarity: 5, name: "センシ", class: "重装", image: "" },
+  { id: "5314", rarity: 5, name: "ツェルニー", class: "重装", image: "" },
+  { id: "5315", rarity: 5, name: "ニアール", class: "重装", image: "" },
+  { id: "5316", rarity: 5, name: "バイソン", class: "重装", image: "" },
+  { id: "5317", rarity: 5, name: "ファイヤーホイッスル", class: "重装", image: "" },
+  { id: "5318", rarity: 5, name: "フィラエ", class: "重装", image: "" },
+  { id: "5319", rarity: 5, name: "ベースライン", class: "重装", image: "" },
+  { id: "5320", rarity: 5, name: "ヘビーレイン", class: "重装", image: "" },
+  { id: "5321", rarity: 5, name: "リスカム", class: "重装", image: "" },
+
+  { id: "5401", rarity: 5, name: "アオスタ", class: "狙撃", image: "" },
+  { id: "5402", rarity: 5, name: "アズリウス", class: "狙撃", image: "" },
+  { id: "5403", rarity: 5, name: "アンドレアナ", class: "狙撃", image: "" },
+  { id: "5404", rarity: 5, name: "イグゼキュター", class: "狙撃", image: "" },
+  { id: "5405", rarity: 5, name: "インサイダー", class: "狙撃", image: "" },
+  { id: "5406", rarity: 5, name: "エイプリル", class: "狙撃", image: "" },
+  { id: "5407", rarity: 5, name: "エラト", class: "狙撃", image: "" },
+  { id: "5408", rarity: 5, name: "キチセイ", class: "狙撃", image: "" },
+  { id: "5409", rarity: 5, name: "グレースロート", class: "狙撃", image: "" },
+  { id: "5410", rarity: 5, name: "コールドショット", class: "狙撃", image: "" },
+  { id: "5411", rarity: 5, name: "シェーシャ", class: "狙撃", image: "" },
+  { id: "5412", rarity: 5, name: "ジエユン", class: "狙撃", image: "" },
+  { id: "5413", rarity: 5, name: "スカイボックス", class: "狙撃", image: "" },
+  { id: "5414", rarity: 5, name: "スノーハンター", class: "狙撃", image: "" },
+  { id: "5415", rarity: 5, name: "ジュー", class: "狙撃", image: "" },
+  { id: "5416", rarity: 5, name: "トギフォンス", class: "狙撃", image: "" },
+  { id: "5417", rarity: 5, name: "ファイヤーウォッチ", class: "狙撃", image: "" },
+  { id: "5418", rarity: 5, name: "プラチナ", class: "狙撃", image: "" },
+  { id: "5419", rarity: 5, name: "ブリギッド", class: "狙撃", image: "" },
+  { id: "5420", rarity: 5, name: "プロヴァンス", class: "狙撃", image: "" },
+  { id: "5421", rarity: 5, name: "メテオリーテ", class: "狙撃", image: "" },
+  { id: "5422", rarity: 5, name: "メラナイト", class: "狙撃", image: "" },
+  { id: "5423", rarity: 5, name: "ルナカブ", class: "狙撃", image: "" },
+  { id: "5424", rarity: 5, name: "寒芒クルース", class: "狙撃", image: "" },
+  { id: "5425", rarity: 5, name: "承曦グレイ", class: "狙撃", image: "" },
+
+  { id: "5501", rarity: 5, name: "アイリス", class: "術師", image: "" },
+  { id: "5502", rarity: 5, name: "アステジーニ", class: "術師", image: "" },
+  { id: "5503", rarity: 5, name: "アブサント", class: "術師", image: "" },
+  { id: "5504", rarity: 5, name: "アロマ", class: "術師", image: "" },
+  { id: "5505", rarity: 5, name: "アーミヤ", class: "術師", image: "" },
+  { id: "5506", rarity: 5, name: "カニパラート", class: "術師", image: "" },
+  { id: "5507", rarity: 5, name: "コロセラム", class: "術師", image: "" },
+  { id: "5508", rarity: 5, name: "イェラ", class: "術師", image: "" },
+  { id: "5509", rarity: 5, name: "ウォーミー", class: "術師", image: "" },
+  { id: "5510", rarity: 5, name: "サンタラ", class: "術師", image: "" },
+  { id: "5511", rarity: 5, name: "スカイフレア", class: "術師", image: "" },
+  { id: "5512", rarity: 5, name: "ディアマンテ", class: "術師", image: "" },
+  { id: "5513", rarity: 5, name: "テクノ", class: "術師", image: "" },
+  { id: "5514", rarity: 5, name: "デルフィーン", class: "術師", image: "" },
+  { id: "5515", rarity: 5, name: "トミミ", class: "術師", image: "" },
+  { id: "5516", rarity: 5, name: "ナイトメア", class: "術師", image: "" },
+  { id: "5517", rarity: 5, name: "ハーモニー", class: "術師", image: "" },
+  { id: "5518", rarity: 5, name: "ビーズワクス", class: "術師", image: "" },
+  { id: "5519", rarity: 5, name: "ミス・クリスティーン", class: "術師", image: "" },
+  { id: "5520", rarity: 5, name: "ミニマリスト", class: "術師", image: "" },
+  { id: "5521", rarity: 5, name: "ミント", class: "術師", image: "" },
+  { id: "5522", rarity: 5, name: "レイズ", class: "術師", image: "" },
+  { id: "5523", rarity: 5, name: "レオンハルト", class: "術師", image: "" },
+  { id: "5524", rarity: 5, name: "ロックロック", class: "術師", image: "" },
+  { id: "5525", rarity: 5, name: "炎獄ラヴァ", class: "術師", image: "" },
+
+  { id: "5601", rarity: 5, name: "アーミヤ(医療)", class: "医療", image: "" },
+  { id: "5602", rarity: 5, name: "ヴァンデラ", class: "医療", image: "" },
+  { id: "5603", rarity: 5, name: "ウィスパーレイン", class: "医療", image: "" },
+  { id: "5604", rarity: 5, name: "サイレンス", class: "医療", image: "" },
+  { id: "5605", rarity: 5, name: "セイロン", class: "医療", image: "" },
+  { id: "5606", rarity: 5, name: "タラクサカム", class: "医療", image: "" },
+  { id: "5607", rarity: 5, name: "トゥイエ", class: "医療", image: "" },
+  { id: "5608", rarity: 5, name: "ノウエル", class: "医療", image: "" },
+  { id: "5609", rarity: 5, name: "ハニーベリー", class: "医療", image: "" },
+  { id: "5610", rarity: 5, name: "パピルス", class: "医療", image: "" },
+  { id: "5611", rarity: 5, name: "パプリカ", class: "医療", image: "" },
+  { id: "5612", rarity: 5, name: "ハロルド", class: "医療", image: "" },
+  { id: "5613", rarity: 5, name: "フィリオプシス", class: "医療", image: "" },
+  { id: "5614", rarity: 5, name: "フォリニック", class: "医療", image: "" },
+  { id: "5615", rarity: 5, name: "ブリーズ", class: "医療", image: "" },
+  { id: "5616", rarity: 5, name: "マルベリー", class: "医療", image: "" },
+  { id: "5617", rarity: 5, name: "レコードキーパー", class: "医療", image: "" },
+  { id: "5618", rarity: 5, name: "ローズソルト", class: "医療", image: "" },
+  { id: "5619", rarity: 5, name: "ワルファリン", class: "医療", image: "" },
+  { id: "5620", rarity: 5, name: "濯塵ハイビスカス", class: "医療", image: "" },
+
+  { id: "5701", rarity: 5, name: "アランナ", class: "補助", image: "" },
+  { id: "5702", rarity: 5, name: "イースチナ", class: "補助", image: "" },
+  { id: "5703", rarity: 5, name: "ヴァラルクビン", class: "補助", image: "" },
+  { id: "5704", rarity: 5, name: "ウインドフリット", class: "補助", image: "" },
+  { id: "5705", rarity: 5, name: "キャサリン", class: "補助", image: "" },
+  { id: "5706", rarity: 5, name: "クエルクス", class: "補助", image: "" },
+  { id: "5707", rarity: 5, name: "グラウコス", class: "補助", image: "" },
+  { id: "5708", rarity: 5, name: "グレインバッズ", class: "補助", image: "" },
+  { id: "5709", rarity: 5, name: "サンドレコナー", class: "補助", image: "" },
+  { id: "5710", rarity: 5, name: "シャマレ", class: "補助", image: "" },
+  { id: "5711", rarity: 5, name: "シーン", class: "補助", image: "" },
+  { id: "5712", rarity: 5, name: "シィンズゥ", class: "補助", image: "" },
+  { id: "5713", rarity: 5, name: "ソラ", class: "補助", image: "" },
+  { id: "5714", rarity: 5, name: "ツキノギ", class: "補助", image: "" },
+  { id: "5715", rarity: 5, name: "ハイディ", class: "補助", image: "" },
+  { id: "5716", rarity: 5, name: "プラマニクス", class: "補助", image: "" },
+  { id: "5717", rarity: 5, name: "プロヴァイゾ", class: "補助", image: "" },
+  { id: "5718", rarity: 5, name: "ボビング", class: "補助", image: "" },
+  { id: "5719", rarity: 5, name: "メイヤー", class: "補助", image: "" },
+  { id: "5720", rarity: 5, name: "ルシーラ", class: "補助", image: "" },
+  { id: "5721", rarity: 5, name: "九色鹿", class: "補助", image: "" },
+  { id: "5722", rarity: 5, name: "萃香パフューマー", class: "補助", image: "" },
+  { id: "5723", rarity: 5, name: "三角初華", class: "補助", image: "" },
+
+  { id: "5801", rarity: 5, name: "Frost", class: "特殊", image: "" },
+  { id: "5802", rarity: 5, name: "Iana", class: "特殊", image: "" },
+  { id: "5803", rarity: 5, name: "アーモンド", class: "特殊", image: "" },
+  { id: "5804", rarity: 5, name: "ウユウ", class: "特殊", image: "" },
+  { id: "5805", rarity: 5, name: "ウルフェナイト", class: "特殊", image: "" },
+  { id: "5806", rarity: 5, name: "エフイーター", class: "特殊", image: "" },
+  { id: "5807", rarity: 5, name: "エンフォーサー", class: "特殊", image: "" },
+  { id: "5808", rarity: 5, name: "カゼマル", class: "特殊", image: "" },
+  { id: "5809", rarity: 5, name: "カフカ", class: "特殊", image: "" },
+  { id: "5810", rarity: 5, name: "キララ", class: "特殊", image: "" },
+  { id: "5811", rarity: 5, name: "クリフハート", class: "特殊", image: "" },
+  { id: "5812", rarity: 5, name: "スノーズント", class: "特殊", image: "" },
+  { id: "5813", rarity: 5, name: "スプリア", class: "特殊", image: "" },
+  { id: "5814", rarity: 5, name: "ティッピ", class: "特殊", image: "" },
+  { id: "5815", rarity: 5, name: "フィグリーノ", class: "特殊", image: "" },
+  { id: "5816", rarity: 5, name: "ブリキ", class: "特殊", image: "" },
+  { id: "5817", rarity: 5, name: "ベナ", class: "特殊", image: "" },
+  { id: "5818", rarity: 5, name: "マンティコア", class: "特殊", image: "" },
+  { id: "5819", rarity: 5, name: "レッド", class: "特殊", image: "" },
+  { id: "5820", rarity: 5, name: "ロビン", class: "特殊", image: "" },
+  { id: "5821", rarity: 5, name: "ワイフー", class: "特殊", image: "" },
+  { id: "5822", rarity: 5, name: "八幡海鈴", class: "特殊", image: "" },
+  { id: "5823", rarity: 5, name: "若葉睦", class: "特殊", image: "" },
+
+  { id: "4101", rarity: 4, name: "ヴィグナ", class: "先鋒", image: "" },
+  { id: "4102", rarity: 4, name: "クーリエ", class: "先鋒", image: "" },
+  { id: "4103", rarity: 4, name: "スカベンジャー", class: "先鋒", image: "" },
+  { id: "4104", rarity: 4, name: "スネグーラチカ", class: "先鋒", image: "" },
+  { id: "4105", rarity: 4, name: "テンニンカ", class: "先鋒", image: "" },
+  { id: "4106", rarity: 4, name: "ビーンストーク", class: "先鋒", image: "" },
+
+  { id: "4201", rarity: 4, name: "アレーン", class: "前衛", image: "" },
+  { id: "4202", rarity: 4, name: "ウィンドスクート", class: "前衛", image: "" },
+  { id: "4203", rarity: 4, name: "ウタゲ", class: "前衛", image: "" },
+  { id: "4204", rarity: 4, name: "エステル", class: "前衛", image: "" },
+  { id: "4205", rarity: 4, name: "カッター", class: "前衛", image: "" },
+  { id: "4206", rarity: 4, name: "クォーツ", class: "前衛", image: "" },
+  { id: "4207", rarity: 4, name: "コンビクション", class: "前衛", image: "" },
+  { id: "4208", rarity: 4, name: "ジャッキー", class: "前衛", image: "" },
+  { id: "4209", rarity: 4, name: "ドーベルマン", class: "前衛", image: "" },
+  { id: "4210", rarity: 4, name: "ビーハンター", class: "前衛", image: "" },
+  { id: "4211", rarity: 4, name: "ヒューマス", class: "前衛", image: "" },
+  { id: "4212", rarity: 4, name: "フロストリーフ", class: "前衛", image: "" },
+  { id: "4213", rarity: 4, name: "マトイマル", class: "前衛", image: "" },
+  { id: "4214", rarity: 4, name: "ムース", class: "前衛", image: "" },
+  { id: "4215", rarity: 4, name: "羅小黒", class: "前衛", image: "" },
+
+  { id: "4301", rarity: 4, name: "クオーラ", class: "重装", image: "" },
+  { id: "4302", rarity: 4, name: "グム", class: "重装", image: "" },
+  { id: "4303", rarity: 4, name: "ジュナー", class: "重装", image: "" },
+  { id: "4304", rarity: 4, name: "バブル", class: "重装", image: "" },
+  { id: "4305", rarity: 4, name: "マッターホルン", class: "重装", image: "" },
+  { id: "4306", rarity: 4, name: "ルトナダ", class: "重装", image: "" },
+
+  { id: "4401", rarity: 4, name: "アシッドドロップ", class: "狙撃", image: "" },
+  { id: "4402", rarity: 4, name: "アンブリエル", class: "狙撃", image: "" },
+  { id: "4403", rarity: 4, name: "ヴァーミル", class: "狙撃", image: "" },
+  { id: "4404", rarity: 4, name: "ケイパー", class: "狙撃", image: "" },
+  { id: "4405", rarity: 4, name: "ジェシカ", class: "狙撃", image: "" },
+  { id: "4406", rarity: 4, name: "シラユキ", class: "狙撃", image: "" },
+  { id: "4407", rarity: 4, name: "トター", class: "狙撃", image: "" },
+  { id: "4408", rarity: 4, name: "パインコーン", class: "狙撃", image: "" },
+  { id: "4409", rarity: 4, name: "メイ", class: "狙撃", image: "" },
+  { id: "4410", rarity: 4, name: "メテオ", class: "狙撃", image: "" },
+
+  { id: "4501", rarity: 4, name: "アコルト", class: "術師", image: "" },
+  { id: "4502", rarity: 4, name: "インディゴ", class: "術師", image: "" },
+  { id: "4503", rarity: 4, name: "カシャ", class: "術師", image: "" },
+  { id: "4504", rarity: 4, name: "ギターノ", class: "術師", image: "" },
+  { id: "4505", rarity: 4, name: "グレイ", class: "術師", image: "" },
+  { id: "4506", rarity: 4, name: "プリン", class: "術師", image: "" },
+  { id: "4507", rarity: 4, name: "ヘイズ", class: "術師", image: "" },
+
+  { id: "4601", rarity: 4, name: "ガヴィル", class: "医療", image: "" },
+  { id: "4602", rarity: 4, name: "ススーロ", class: "医療", image: "" },
+  { id: "4603", rarity: 4, name: "セイリュウ", class: "医療", image: "" },
+  { id: "4604", rarity: 4, name: "チェストナット", class: "医療", image: "" },
+  { id: "4605", rarity: 4, name: "パフューマー", class: "医療", image: "" },
+
+  { id: "4701", rarity: 4, name: "ミルラ", class: "補助", image: "" },
+  { id: "4702", rarity: 4, name: "アーススピリット", class: "補助", image: "" },
+  { id: "4703", rarity: 4, name: "ディピカ", class: "補助", image: "" },
+  { id: "4704", rarity: 4, name: "ポデンコ", class: "補助", image: "" },
+  { id: "4705", rarity: 4, name: "ロベルタ", class: "補助", image: "" },
+
+  { id: "4801", rarity: 4, name: "イーサン", class: "特殊", image: "" },
+  { id: "4802", rarity: 4, name: "ヴァーダント", class: "特殊", image: "" },
+  { id: "4803", rarity: 4, name: "グラベル", class: "特殊", image: "" },
+  { id: "4804", rarity: 4, name: "コントレイル", class: "特殊", image: "" },
+  { id: "4805", rarity: 4, name: "ジェイ", class: "特殊", image: "" },
+  { id: "4806", rarity: 4, name: "ショウ", class: "特殊", image: "" },
+  { id: "4807", rarity: 4, name: "ロープ", class: "特殊", image: "" },
+
+  { id: "3101", rarity: 3, name: "バニラ", class: "先鋒", image: "" },
+  { id: "3102", rarity: 3, name: "フェン", class: "先鋒", image: "" },
+  { id: "3103", rarity: 3, name: "プリュム", class: "先鋒", image: "" },
+  { id: "3104", rarity: 3, name: "ポプカル", class: "先鋒", image: "" },
+
+  { id: "3201", rarity: 3, name: "ミッドナイト", class: "前衛", image: "" },
+  { id: "3202", rarity: 3, name: "メランサ", class: "前衛", image: "" },
+
+  { id: "3301", rarity: 3, name: "カーディ", class: "重装", image: "" },
+  { id: "3302", rarity: 3, name: "スポット", class: "重装", image: "" },
+  { id: "3303", rarity: 3, name: "ビーグル", class: "重装", image: "" },
+
+  { id: "3401", rarity: 3, name: "アドナキエル", class: "狙撃", image: "" },
+  { id: "3402", rarity: 3, name: "カタパルト", class: "狙撃", image: "" },
+  { id: "3403", rarity: 3, name: "クルース", class: "狙撃", image: "" },
+
+  { id: "3501", rarity: 3, name: "スチュワード", class: "術師", image: "" },
+  { id: "3502", rarity: 3, name: "ラヴァ", class: "術師", image: "" },
+
+  { id: "3601", rarity: 3, name: "アンセル", class: "医療", image: "" },
+  { id: "3602", rarity: 3, name: "ハイビスカス", class: "医療", image: "" },
+
+  { id: "3701", rarity: 3, name: "オーキッド", class: "補助", image: "" },
+
+  { id: "2101", rarity: 2, name: "ヤトウ", class: "先鋒", image: "" },
+
+  { id: "2301", rarity: 2, name: "ノイルホーン", class: "重装", image: "" },
+
+  { id: "2401", rarity: 2, name: "レンジャー", class: "狙撃", image: "" },
+
+  { id: "2501", rarity: 2, name: "12F", class: "術師", image: "" },
+  { id: "2502", rarity: 2, name: "ドゥリン", class: "術師", image: "" },
+
+  { id: "1101", rarity: 1, name: "CONFESS-47", class: "先鋒", image: "" },
+
+  { id: "1201", rarity: 1, name: "Castle-3", class: "前衛", image: "" },
+
+  { id: "1301", rarity: 1, name: "Friston-3", class: "重装", image: "" },
+
+  { id: "1401", rarity: 1, name: "ジャスティスナイト", class: "狙撃", image: "" },
+  { id: "1402", rarity: 1, name: "テラ大陸調査団", class: "狙撃", image: "" },
+
+  { id: "1601", rarity: 1, name: "Lancet-2", class: "医療", image: "" },
+
+  { id: "1701", rarity: 1, name: "PhonoR-0", class: "補助", image: "" },
+  { id: "1702", rarity: 1, name: "U-Official", class: "補助", image: "" },
+
+  { id: "1801", rarity: 1, name: "THRM-EX", class: "特殊", image: "" }
+];
