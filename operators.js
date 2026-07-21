@@ -71,7 +71,7 @@ const OPERATOR_DATA = [
   { id: "6313", rarity: 6, name: "斬業ホシグマ", class: "重装", image: "6313.png" },
 
   { id: "6401", rarity: 6, name: "Ash", class: "狙撃", image: "6401.png" },
-  { id: "6402", rarity: 6, name: "W(プレイアブル)", class: "狙撃", image: "6402.png" },
+  { id: "6402", rarity: 6, name: "W", class: "狙撃", image: "6402.png" },
   { id: "6403", rarity: 6, name: "アルケット", class: "狙撃", image: "6403.png" },
   { id: "6404", rarity: 6, name: "ウィシャデル", class: "狙撃", image: "6404.png" },
   { id: "6405", rarity: 6, name: "エクシア", class: "狙撃", image: "6405.png" },
