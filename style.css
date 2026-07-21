@@ -28,7 +28,7 @@ input {
 }
 
 .page {
-  width: 1040px;
+  width: 1200px;
   margin: 0 auto;
   padding: 16px 0 24px;
 }
@@ -132,7 +132,7 @@ input {
 }
 
 .unofficial-note {
-  width: 1040px;
+  width: 1200px;
   margin: 0 auto 20px;
   color: rgba(108, 106, 99, 0.55);
   font-size: 0.72rem;
@@ -512,7 +512,7 @@ h1 {
 
 .operator-list {
   display: grid;
-  grid-template-columns: repeat(10, 104px);
+  grid-template-columns: repeat(10, 120px);
   justify-content: start;
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
@@ -524,9 +524,9 @@ h1 {
   flex-direction: column;
   align-items: stretch;
   gap: 3px;
-  width: 104px;
+  width: 120px;
   height: 112px;
-  padding: 6px 5px 5px;
+  padding: 6px 8px 5px;
   border: 0;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -539,7 +539,7 @@ h1 {
 
 .operator-card:not(.has-image) {
   justify-content: space-between;
-  padding: 8px 6px;
+  padding: 8px;
 }
 
 .operator-image {
@@ -577,25 +577,26 @@ h1 {
   flex: 0 0 14px;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 6px;
+  min-width: 0;
   min-height: 0;
 }
 
 .operator-class {
-  overflow: hidden;
+  flex: 0 0 auto;
   color: rgba(32, 28, 24, 0.72);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .operator-rarity {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   color: #b07c26;
   font-size: 11px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .operator-card:hover {
@@ -665,12 +666,12 @@ h1 {
 
 @media (max-width: 600px) {
   .page {
-    width: min(1040px, 100%);
+    width: min(1200px, 100%);
     padding: 16px 12px 24px;
   }
 
   .unofficial-note {
-    width: min(1040px, 100%);
+    width: min(1200px, 100%);
     padding: 0 12px;
     text-align: left;
   }
