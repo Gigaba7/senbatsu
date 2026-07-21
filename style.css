@@ -417,12 +417,11 @@ h1 {
 }
 
 .operator-card {
-  display: flex;
-  min-height: 86px;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 7px;
-  padding: 12px;
+  display: grid;
+  grid-template-rows: 3fr 0.5fr 0.5fr;
+  width: 130px;
+  height: calc(130px * 4 / 3);
+  padding: 0;
   border: 0;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -433,50 +432,62 @@ h1 {
   transition: background-color 120ms ease, color 120ms ease;
 }
 
-.operator-card.has-image {
-  min-height: 118px;
-  padding: 0;
-  gap: 0;
+.operator-card:not(.has-image) {
+  grid-template-rows: 1fr auto;
+  align-content: space-between;
+  padding: 10px;
+  height: calc(130px * 4 / 3);
 }
 
 .operator-image {
   display: block;
+  box-sizing: border-box;
   width: 100%;
-  height: 48px;
-  object-fit: cover;
-  object-position: top center;
-  background: rgba(0, 0, 0, 0.08);
+  height: 100%;
+  padding: 4px;
+  object-fit: contain;
+  object-position: center bottom;
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .operator-image[hidden] {
   display: none;
 }
 
-.operator-card.has-image .operator-name,
-.operator-card.has-image .operator-meta {
-  padding-inline: 10px;
-}
-
-.operator-card.has-image .operator-name {
-  padding-top: 8px;
-  margin-bottom: 4px;
-}
-
-.operator-card.has-image .operator-meta {
-  padding-bottom: 10px;
+.operator-name {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
 }
 
 .operator-meta {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
+  padding: 0 8px 4px;
+  min-height: 0;
 }
 
 .operator-class {
+  overflow: hidden;
   color: rgba(32, 28, 24, 0.72);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.operator-rarity {
+  flex-shrink: 0;
+  color: #b07c26;
+  font-size: 11px;
   letter-spacing: 0.02em;
 }
 
@@ -512,23 +523,6 @@ h1 {
   position: relative;
   outline: 2px solid var(--accent);
   outline-offset: -2px;
-}
-
-.operator-name {
-  display: -webkit-box;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.25;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.operator-rarity {
-  color: #b07c26;
-  font-size: 14px;
-  letter-spacing: 0.04em;
 }
 
 .operator-card.is-used {
@@ -578,10 +572,6 @@ h1 {
 
   .button {
     flex: 1;
-  }
-
-  .operator-card {
-    min-height: 82px;
   }
 
   .sheet-header {
