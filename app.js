@@ -497,8 +497,53 @@ operatorList.addEventListener("click", (event) => {
   render();
 });
 
+const announcementButton = document.querySelector("#announcement-button");
+const announcementPanel = document.querySelector("#announcement-panel");
+
+function renderAnnouncements() {
+  const items = Array.isArray(ANNOUNCEMENTS) ? ANNOUNCEMENTS.filter(Boolean) : [];
+  announcementPanel.replaceChildren();
+
+  if (items.length === 0) {
+    announcementButton.hidden = true;
+    setAnnouncementOpen(false);
+    return;
+  }
+
+  announcementButton.hidden = false;
+  items.forEach((text) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    announcementPanel.append(paragraph);
+  });
+}
+
+function setAnnouncementOpen(open) {
+  announcementButton.setAttribute("aria-expanded", String(open));
+  announcementPanel.hidden = !open;
+}
+
+announcementButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  setAnnouncementOpen(announcementPanel.hidden);
+});
+
+document.addEventListener("click", (event) => {
+  if (announcementPanel.hidden) return;
+  if (event.target.closest(".announcement")) return;
+  setAnnouncementOpen(false);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !announcementPanel.hidden) {
+    setAnnouncementOpen(false);
+    announcementButton.focus();
+  }
+});
+
 buildClassToggles();
 loadSelectionOptions();
 applyOptionsToDialog();
 loadSheet();
+renderAnnouncements();
 render();

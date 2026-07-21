@@ -15,6 +15,22 @@
           <h1>ランダムX人 オペレーターシート</h1>
           <p class="lead">選出したオペレーターをクリックして、使用状況を記録できます。</p>
         </div>
+        <div class="announcement">
+          <button
+            id="announcement-button"
+            class="announcement-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="announcement-panel"
+            title="お知らせ"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4.2 3.15A.75.75 0 0 1 5.5 18.5V16H6.5A2.5 2.5 0 0 1 4 13.5v-7Z" />
+            </svg>
+            <span class="visually-hidden">お知らせ</span>
+          </button>
+          <div id="announcement-panel" class="announcement-panel" role="region" aria-label="お知らせ" hidden></div>
+        </div>
       </header>
 
       <section class="controls" aria-label="抽選設定">
@@ -76,6 +92,8 @@
       </section>
     </main>
 
+    <p class="unofficial-note">非公式ファンツールです。Hypergryph / Yostar とは無関係です。</p>
+
     <dialog id="options-dialog" class="options-dialog">
       <form method="dialog">
         <div class="dialog-header">
@@ -135,6 +153,7 @@
     </template>
 
     <script src="operators.js"></script>
+    <script src="announcements.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
