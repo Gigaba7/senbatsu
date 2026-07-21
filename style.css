@@ -418,7 +418,7 @@ h1 {
 
 .operator-card {
   --card-width: 130px;
-  --card-height: calc(var(--card-width) * 2 / 3);
+  --card-height: calc(var(--card-width) * 4 / 3);
   display: grid;
   grid-template-rows: 3fr 0.5fr 0.5fr;
   width: var(--card-width);
@@ -437,18 +437,19 @@ h1 {
 .operator-card:not(.has-image) {
   grid-template-rows: 1fr auto;
   align-content: space-between;
-  padding: 6px 8px;
+  padding: 10px;
 }
 
 .operator-image {
   display: block;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: 2px;
+  width: 65px;
+  height: 65px;
+  justify-self: center;
+  align-self: end;
   object-fit: contain;
   object-position: center bottom;
-  background: rgba(0, 0, 0, 0.06);
+  background: transparent;
 }
 
 .operator-image[hidden] {
@@ -456,16 +457,14 @@ h1 {
 }
 
 .operator-name {
-  display: -webkit-box;
+  display: flex;
   align-items: center;
   overflow: hidden;
   overflow-wrap: anywhere;
-  padding: 0 6px;
-  font-size: 11px;
+  padding: 0 8px;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.1;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  line-height: 1.15;
 }
 
 .operator-meta {
@@ -473,14 +472,14 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  padding: 0 6px 2px;
+  padding: 0 8px 4px;
   min-height: 0;
 }
 
 .operator-class {
   overflow: hidden;
   color: rgba(32, 28, 24, 0.72);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -490,7 +489,7 @@ h1 {
 .operator-rarity {
   flex-shrink: 0;
   color: #b07c26;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.02em;
 }
 
